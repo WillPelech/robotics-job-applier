@@ -1,0 +1,50 @@
+# ─── Personal Info ────────────────────────────────────────────────────────────
+person:
+  name: "Jane Doe"
+  email: "jane.doe@example.com"
+  phone: "555-867-5309"
+  location: "Boston, MA"
+  linkedin: "https://linkedin.com/in/janedoe"
+  github: "https://github.com/janedoe"
+  resume_pdf: "/home/jane/Documents/resume.pdf"   # absolute path to your resume PDF
+  years_experience: 4
+
+  # Free-form background used by the LLM to answer custom questions.
+  # Be thorough — the more detail here, the better the answers.
+  background: |
+    I have 4 years of experience in robotics software engineering, focusing on
+    motion planning, ROS 2, and perception pipelines. I hold a BS in Mechanical
+    Engineering and an MS in Robotics from CMU. I've shipped production code for
+    autonomous mobile robots (AMRs) at a warehouse automation startup, and I'm
+    proficient in C++17, Python 3, and modern CMake. I care deeply about writing
+    clean, testable code and mentoring junior engineers.
+
+# ─── Role Preferences ─────────────────────────────────────────────────────────
+# The LLM uses these to score job fit. Be specific — titles AND skill keywords.
+roles:
+  - "Robotics Software Engineer"
+  - "Motion Planning Engineer"
+  - "Autonomy Engineer"
+  - "ROS"
+  - "ROS 2"
+  - "C++ robotics"
+  - "perception"
+  - "SLAM"
+
+# ─── Application Behavior ─────────────────────────────────────────────────────
+# cover_letter: auto | never | always
+#   auto   = generate only when the form marks the field as required
+#   never  = never generate (skip field entirely)
+#   always = always generate even for optional fields
+cover_letter: auto
+
+# Minimum fit score (0–10) returned by Claude to proceed with an application.
+# Jobs scored below this threshold are skipped and logged as "skipped_low_fit".
+fit_threshold: 7
+
+# ─── Job Posting Allowlist ────────────────────────────────────────────────────
+# Add Greenhouse posting URLs here each day.
+# Already-applied URLs are tracked in applied.json and will be skipped.
+allowlist:
+  - "https://boards.greenhouse.io/examplecompany/jobs/1234567"
+  - "https://boards.greenhouse.io/anotherco/jobs/9876543"

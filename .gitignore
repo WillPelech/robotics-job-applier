@@ -1,0 +1,8 @@
+.env
+applied.json
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+*.pdf
