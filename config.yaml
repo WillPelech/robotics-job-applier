@@ -31,6 +31,16 @@ roles:
   - "perception"
   - "SLAM"
 
+# ─── Location Filter ──────────────────────────────────────────────────────────
+# Only apply to jobs whose listed location contains at least one of these strings
+# (case-insensitive). Also matches "Remote" and "Hybrid" if listed here.
+# Leave empty ([]) to disable location filtering.
+locations:
+  - "New York"
+  - "NYC"
+  - "Boston"
+  - "Remote"
+
 # ─── Application Behavior ─────────────────────────────────────────────────────
 # cover_letter: auto | never | always
 #   auto   = generate only when the form marks the field as required

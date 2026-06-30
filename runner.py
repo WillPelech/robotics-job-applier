@@ -81,6 +81,14 @@ def _is_standard_field(field: FormField) -> bool:
     return field.name in standard_names or _is_cover_letter_field(field)
 
 
+def _location_allowed(posting_location: str, allowed: list[str]) -> bool:
+    """Return True if posting_location matches any entry in allowed (case-insensitive)."""
+    if not allowed:
+        return True
+    loc_lower = posting_location.lower()
+    return any(a.lower() in loc_lower for a in allowed)
+
+
 def process_job(
     url: str,
     config: dict[str, Any],
@@ -91,6 +99,7 @@ def process_job(
     roles: list[str] = config.get("roles", [])
     fit_threshold: int = int(config.get("fit_threshold", 7))
     cl_mode: str = config.get("cover_letter", "auto")
+    allowed_locations: list[str] = config.get("locations", [])
 
     print(f"\n{'='*60}")
     print(f"Processing: {url}")
@@ -103,9 +112,20 @@ def process_job(
         _record(applied_records, url, "error", reason=str(exc))
         return
 
-    print(f"  Title:   {posting.title}")
-    print(f"  Company: {posting.company}")
-    print(f"  Fields:  {len(posting.form_fields)} detected")
+    print(f"  Title:    {posting.title}")
+    print(f"  Company:  {posting.company}")
+    print(f"  Location: {posting.location or 'unknown'}")
+    print(f"  Fields:   {len(posting.form_fields)} detected")
+
+    # ── Location filter ────────────────────────────────────────────────────────
+    if not _location_allowed(posting.location, allowed_locations):
+        msg = f"Location '{posting.location}' not in allowed list: {allowed_locations}"
+        print(f"  [SKIP] {msg}")
+        _record(
+            applied_records, url, "skipped_location",
+            title=posting.title, company=posting.company, reason=msg,
+        )
+        return
 
     # ── Fit check ──────────────────────────────────────────────────────────────
     score, reason = score_fit(posting.title, posting.description, person, roles)
@@ -208,8 +228,15 @@ def main() -> None:
         process_job(url, config, applied_records, dry_run=args.dry_run)
 
     applied_count = sum(1 for r in applied_records if r["status"] == "applied")
+    skipped_loc = sum(1 for r in applied_records if r["status"] == "skipped_location")
+    skipped_fit = sum(1 for r in applied_records if r["status"] == "skipped_low_fit")
     print(f"\n{'='*60}")
-    print(f"Done. Applied: {applied_count}  |  Skipped (duplicate): {skipped_already}")
+    print(
+        f"Done. Applied: {applied_count}  |  "
+        f"Skipped (duplicate): {skipped_already}  |  "
+        f"Skipped (location): {skipped_loc}  |  "
+        f"Skipped (low fit): {skipped_fit}"
+    )
 
 
 if __name__ == "__main__":
