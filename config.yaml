@@ -20,16 +20,13 @@ person:
     clean, testable code and mentoring junior engineers.
 
 # ─── Role Preferences ─────────────────────────────────────────────────────────
-# The LLM uses these to score job fit. Be specific — titles AND skill keywords.
+# Job titles and skill keywords Claude uses to score fit.
+# Can be any domain — robotics, ML, frontend, data, etc.
+# Mix broad titles with specific skills for best results.
 roles:
-  - "Robotics Software Engineer"
-  - "Motion Planning Engineer"
-  - "Autonomy Engineer"
-  - "ROS"
-  - "ROS 2"
-  - "C++ robotics"
-  - "perception"
-  - "SLAM"
+  - "Software Engineer"
+  - "Python"
+  - "distributed systems"
 
 # ─── Location Filter ──────────────────────────────────────────────────────────
 # Only apply to jobs whose listed location contains at least one of these strings
@@ -51,6 +48,14 @@ cover_letter: auto
 # Minimum fit score (0–10) returned by Claude to proceed with an application.
 # Jobs scored below this threshold are skipped and logged as "skipped_low_fit".
 fit_threshold: 7
+
+# ─── Google Sheets Tracking ───────────────────────────────────────────────────
+# Paste the spreadsheet ID from the URL:
+#   https://docs.google.com/spreadsheets/d/<SPREADSHEET_ID>/edit
+# Leave blank ("") to disable sheet logging.
+# Also set GOOGLE_SERVICE_ACCOUNT_JSON=/path/to/credentials.json in your .env
+# See README.md § Google Sheets Setup for full instructions.
+spreadsheet_id: ""
 
 # ─── Job Posting Allowlist ────────────────────────────────────────────────────
 # Add Greenhouse posting URLs here each day.

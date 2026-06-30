@@ -23,6 +23,7 @@ from dotenv import load_dotenv
 from filler import fill_application
 from llm import answer_question, score_fit, write_cover_letter
 from scraper import FormField, scrape_greenhouse
+from sheets import log_application
 
 APPLIED_PATH = Path(__file__).parent / "applied.json"
 CONFIG_PATH = Path(__file__).parent / "config.yaml"
@@ -100,6 +101,7 @@ def process_job(
     fit_threshold: int = int(config.get("fit_threshold", 7))
     cl_mode: str = config.get("cover_letter", "auto")
     allowed_locations: list[str] = config.get("locations", [])
+    spreadsheet_id: str = config.get("spreadsheet_id", "")
 
     print(f"\n{'='*60}")
     print(f"Processing: {url}")
@@ -110,6 +112,7 @@ def process_job(
     except Exception as exc:
         print(f"  [ERROR] Failed to scrape: {exc}")
         _record(applied_records, url, "error", reason=str(exc))
+        log_application(spreadsheet_id, "", "", "", url, "error", reason=str(exc))
         return
 
     print(f"  Title:    {posting.title}")
@@ -125,6 +128,7 @@ def process_job(
             applied_records, url, "skipped_location",
             title=posting.title, company=posting.company, reason=msg,
         )
+        log_application(spreadsheet_id, posting.title, posting.company, posting.location, url, "skipped_location", reason=msg)
         return
 
     # ── Fit check ──────────────────────────────────────────────────────────────
@@ -138,6 +142,7 @@ def process_job(
             title=posting.title, company=posting.company,
             reason=f"Score {score}: {reason}",
         )
+        log_application(spreadsheet_id, posting.title, posting.company, posting.location, url, "skipped_low_fit", fit_score=score, reason=reason)
         return
 
     # ── Cover letter decision ──────────────────────────────────────────────────
@@ -180,11 +185,13 @@ def process_job(
     except Exception as exc:
         print(f"  [ERROR] Form filling failed: {exc}")
         _record(applied_records, url, "error", title=posting.title, company=posting.company, reason=str(exc))
+        log_application(spreadsheet_id, posting.title, posting.company, posting.location, url, "error", fit_score=score, reason=str(exc))
         return
 
     status = "dry_run" if dry_run else "applied"
     print(f"  [OK] Status: {status}")
     _record(applied_records, url, status, title=posting.title, company=posting.company)
+    log_application(spreadsheet_id, posting.title, posting.company, posting.location, url, status, fit_score=score)
 
 
 # ─── CLI ──────────────────────────────────────────────────────────────────────

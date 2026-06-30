@@ -1,5 +1,7 @@
 .env
 applied.json
+*-sa.json
+*service-account*.json
 __pycache__/
 *.py[cod]
 *.egg-info/
