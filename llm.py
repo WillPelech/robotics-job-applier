@@ -27,10 +27,14 @@ def _get_client() -> anthropic.Anthropic:
     return _client
 
 
-def _chat(system: str, user: str, max_tokens: int = 1024) -> str:
+_FAST_MODEL = "claude-haiku-3-5"   # fit scoring — cheap, fast
+_STRONG_MODEL = "claude-opus-4-5"  # cover letters + Q&A — higher quality
+
+
+def _chat(system: str, user: str, max_tokens: int = 1024, model: str = _STRONG_MODEL) -> str:
     client = _get_client()
     msg = client.messages.create(
-        model="claude-opus-4-5",
+        model=model,
         max_tokens=max_tokens,
         system=system,
         messages=[{"role": "user", "content": user}],
@@ -68,7 +72,7 @@ Role interests / skills: {', '.join(roles)}
 Background:
 {person.get('background', '')}
 """
-    raw = _chat(_FIT_SYSTEM, user_prompt, max_tokens=256)
+    raw = _chat(_FIT_SYSTEM, user_prompt, max_tokens=256, model=_FAST_MODEL)
 
     # Tolerate minor JSON wrapping from the model
     raw = re.sub(r"^```[a-z]*\n?", "", raw)
