@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 
 from filler import fill_application
 from llm import answer_question, score_fit, write_cover_letter
-from scraper import FormField, scrape_greenhouse
+from scraper import STANDARD_FIELD_LABELS, FormField, scrape_greenhouse
 from sheets import log_application
 
 APPLIED_PATH = Path(__file__).parent / "applied.json"
@@ -75,11 +75,7 @@ def _is_cover_letter_field(field: FormField) -> bool:
 
 
 def _is_standard_field(field: FormField) -> bool:
-    standard_names = {
-        "first_name", "last_name", "email", "phone", "location",
-        "resume", "cover_letter", "linkedin_url", "website", "github",
-    }
-    return field.name in standard_names or _is_cover_letter_field(field)
+    return bool(STANDARD_FIELD_LABELS.search(field.label)) or _is_cover_letter_field(field)
 
 
 def _location_allowed(posting_location: str, allowed: list[str]) -> bool:

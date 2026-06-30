@@ -35,6 +35,20 @@ python runner.py             # submit all new jobs in the allowlist
 python runner.py --url https://boards.greenhouse.io/company/jobs/123  # single URL
 ```
 
+## Robotics Job Boards
+
+These sites are worth checking daily for Greenhouse postings to add to your `allowlist`:
+
+| Board | Focus | Notes |
+|-------|-------|-------|
+| [careersinrobotics.com](https://careersinrobotics.com) | Broad robotics & automation | 3,200+ curated jobs, browsable by role/industry |
+| [roboticshire.net](https://roboticshire.net) | Robotics & automation | Strong on ROS, AMR, drone, surgical roles |
+| [greatrobots.ai](https://greatrobots.ai) | Robotics & autonomy | Lists Figure AI, Anduril, Applied Intuition, Shield AI |
+| [robots.jobs](https://robots.jobs) | AI + robotics | 100% focused on AI/robotics |
+| [LinkedIn Jobs](https://linkedin.com/jobs) | All fields | Highest volume; filter by "Greenhouse" in the apply flow |
+
+Most postings on these boards link directly to Greenhouse URLs — paste those into your `allowlist`.
+
 ## Google Sheets Setup
 
 Each run appends a row to your sheet with: Date, Title, Company, Location, URL, Status, Fit Score, Reason.
