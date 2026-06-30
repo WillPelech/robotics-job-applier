@@ -86,6 +86,15 @@ def _location_allowed(posting_location: str, allowed: list[str]) -> bool:
     return any(a.lower() in loc_lower for a in allowed)
 
 
+def _blocklist_match(title: str, description: str, blocklist: list[str]) -> str | None:
+    """Return the matched term if any blocklist keyword appears in title or description."""
+    haystack = (title + " " + description).lower()
+    for term in blocklist:
+        if term.lower() in haystack:
+            return term
+    return None
+
+
 def process_job(
     url: str,
     config: dict[str, Any],
@@ -97,6 +106,7 @@ def process_job(
     fit_threshold: int = int(config.get("fit_threshold", 7))
     cl_mode: str = config.get("cover_letter", "auto")
     allowed_locations: list[str] = config.get("locations", [])
+    blocklist: list[str] = config.get("blocklist", [])
     spreadsheet_id: str = config.get("spreadsheet_id", "")
 
     print(f"\n{'='*60}")
@@ -115,6 +125,18 @@ def process_job(
     print(f"  Company:  {posting.company}")
     print(f"  Location: {posting.location or 'unknown'}")
     print(f"  Fields:   {len(posting.form_fields)} detected")
+
+    # ── Blocklist check ────────────────────────────────────────────────────────
+    matched = _blocklist_match(posting.title, posting.description, blocklist)
+    if matched:
+        msg = f"Blocked keyword '{matched}' found in job title/description"
+        print(f"  [SKIP] {msg}")
+        _record(
+            applied_records, url, "skipped_blocklist",
+            title=posting.title, company=posting.company, reason=msg,
+        )
+        log_application(spreadsheet_id, posting.title, posting.company, posting.location, url, "skipped_blocklist", reason=msg)
+        return
 
     # ── Location filter ────────────────────────────────────────────────────────
     if not _location_allowed(posting.location, allowed_locations):
@@ -233,10 +255,12 @@ def main() -> None:
     applied_count = sum(1 for r in applied_records if r["status"] == "applied")
     skipped_loc = sum(1 for r in applied_records if r["status"] == "skipped_location")
     skipped_fit = sum(1 for r in applied_records if r["status"] == "skipped_low_fit")
+    skipped_block = sum(1 for r in applied_records if r["status"] == "skipped_blocklist")
     print(f"\n{'='*60}")
     print(
         f"Done. Applied: {applied_count}  |  "
         f"Skipped (duplicate): {skipped_already}  |  "
+        f"Skipped (blocklist): {skipped_block}  |  "
         f"Skipped (location): {skipped_loc}  |  "
         f"Skipped (low fit): {skipped_fit}"
     )

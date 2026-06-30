@@ -38,6 +38,25 @@ locations:
   - "Boston"
   - "Remote"
 
+# ─── Keyword Blocklist ────────────────────────────────────────────────────────
+# If ANY of these strings appear in the job title or description (case-insensitive),
+# the job is skipped immediately — no fit scoring, no application.
+# Add any company names, titles, or topics you never want to apply to.
+blocklist:
+  - "defense"
+  - "military"
+  - "DoD"
+  - "Department of Defense"
+  - "DARPA"
+  - "classified"
+  - "security clearance"
+  - "TS/SCI"
+  - "Top Secret"
+  - "Anduril"
+  - "Shield AI"
+  - "Palantir"
+  - "autonomous weapons"
+
 # ─── Application Behavior ─────────────────────────────────────────────────────
 # cover_letter: auto | never | always
 #   auto   = generate only when the form marks the field as required
